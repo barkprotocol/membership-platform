@@ -1,0 +1,12 @@
+import React from 'react';
+
+const SampleComponent: React.FC = () => {
+  return (
+    <div>
+      <h1 className="textShadowLg text-white">Large Shadow Text</h1>
+      <p className="textShadowMd text-gray-300">Medium Shadow Text</p>
+    </div>
+  );
+};
+
+export default SampleComponent;

@@ -1,9 +1,10 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  experimental: {
-    ppr: true,
+  reactStrictMode: true,
+  images: {
+    domains: ['ucarecdn.com', 'flaticon.com'], // Add the hostname here
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig

@@ -1,113 +1,201 @@
-# Next.js SaaS Starter
+# BARK - Members Club Platform
+**Proof of Concept**
 
-> [!IMPORTANT]  
-> This repo is a work-in-progress. Please open an issue if you see something wrong!
-
-This is a starter template for building a SaaS application using **Next.js** with support for authentication, Stripe integration for payments, and a dashboard for logged-in users.
-
-**Demo: [https://next-saas-start.vercel.app/](https://next-saas-start.vercel.app/)**
-
-<details>
-  <summary>Wait, why make this?</summary>
-  
-  In 2020, I made a course called "React 2025" which showed how to build a SaaS application with Next.js, Stripe, and other tools.
-
-Well, it's almost 2025 and React 19 has brought so many amazing new features I didn't predict! This repo is a demonstration of the latest React and Next.js patterns. These patterns can drastically simplify some common tasks in building your SaaS, like building forms, talking to your database, and more.
-
-For example, React now has built in looks like `useActionState` to handle inline form errors and pending states. React Server Actions can replace a lot of boilerplace code needed to call an API Route from the client-side. And finally, the React `use` hook combined with Next.js makes it incredibly easy to build a powerful `useUser()` hook.
-
-We're able to fetch the user from our Postgres database in the root layout, but _not_ await the `Promise`. Instead, we forward the `Promise` to a React context provider, where we can "unwrap" it and awaited the streamed in data. This means we can have the best of both worlds: easy code to fetch data from our database (e.g. `getUser()`) and a React hook we can use in Client Components (e.g. `useUser()`).
-
-Fun fact: the majority of the UI for this application was built with [v0](https://v0.dev) 🤯 [More details here](https://x.com/leeerob/status/1835777934361084316) if you want to learn about this repo.
-
-</details>
+BARK is a Members Club Platform built as a SaaS application that provides exclusive features and rewards to its members. This platform includes user authentication, Stripe integration for payments, role-based access control, and a personalized dashboard for users to manage memberships, clubs, and NFTs.
 
 ## Features
 
-- Marketing landing page (`/`) with animated Terminal element
-- Pricing page (`/pricing`) which connects to Stripe Checkout
-- Dashboard pages with CRUD operations on users/teams
-- Basic RBAC with Owner and Member roles
-- Subscription management with Stripe Customer Portal
-- Email/password authentication with JWTs stored to cookies
-- Global middleware to protect logged-in routes
-- Local middleware to protect Server Actions or validate Zod schemas
-- Activity logging system for any user events
+- **Marketing Landing Page** (`/`):  
+  A beautifully designed landing page that introduces the platform, including sections for **Marketing**, **Membership**, and **Club** information.
+  
+- **Pricing Page** (`/pricing`):  
+  A pricing page that connects to both **Solana Pay** and **Stripe Checkout**, offering users flexible payment methods.
+
+- **Dashboard Pages**:  
+  Authenticated users can manage their data and interact with the platform using **CRUD operations** on users and clubs.
+
+- **Role-Based Access Control (RBAC)**:  
+  Basic access control system supporting **Owner** and **Member** roles for fine-grained permissions.
+
+- **Subscription Management**:  
+  Integrates with **Stripe Customer Portal** for managing subscription plans, billing details, and payment history.
+
+- **Email/Password Authentication**:  
+  Secure **JWT-based** authentication system. JWTs are stored in cookies for session management.
+
+- **Global Middleware**:  
+  Protects logged-in routes by ensuring only authenticated users can access certain pages.
+
+- **Local Middleware**:  
+  Used to secure server actions and validate inputs using **Zod** schemas to ensure correct data handling.
+
+- **Activity Logging System**:  
+  Tracks and logs key user events to monitor activity across the platform.
+
+- **Database Management with Drizzle Kit**:  
+  Drizzle Kit is used to manage database migrations, schema updates, and SQL query generation for your application.
 
 ## Tech Stack
 
-- **Framework**: [Next.js](https://nextjs.org/)
-- **Database**: [Postgres](https://www.postgresql.org/)
-- **ORM**: [Drizzle](https://orm.drizzle.team/)
-- **Payments**: [Stripe](https://stripe.com/)
-- **UI LIbrary**: [shadcn/ui](https://ui.shadcn.com/)
+- **Next.js**: React framework with server-side rendering and static site generation.
+- **TypeScript**: Provides type safety to ensure code reliability.
+- **NextAuth.js**: Manages authentication using JWTs for secure user sessions.
+- **Stripe**: Handles membership payments and subscription management.
+- **Solana Pay**: Integration for Solana-based payment options.
+- **Drizzle Kit**: Simplifies database migrations and schema management.
+- **Tailwind CSS**: Utility-first CSS framework for styling.
+- **MongoDB**: Database solution for storing user and subscription data.
+- **Vercel**: Hosting and deployment platform optimized for Next.js applications.
 
 ## Getting Started
 
-```bash
-git clone https://github.com/leerob/next-saas-starter
-pnpm install
-pnpm db:setup
-pnpm db:migrate
-pnpm db:seed
-```
-
-Running the setup script will create your `.env` file locally.
-
-## Running Locally
-
-Once you have set up the environment variables and installed dependencies, run the development server:
+### 1. Clone the Repository
 
 ```bash
-pnpm dev
+git clone https://github.com/barkprotocol/members-club-platform.git
+cd members-club-platform
 ```
 
-Then, also listen for Stripe webhooks locally through their CLI:
+### 2. Install Dependencies
+
+Install the required dependencies with npm or yarn:
 
 ```bash
-stripe listen --forward-to localhost:3000/api/stripe/webhook
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the app in action.
+or
 
-## Testing Payments
+```bash
+yarn install
+```
 
-To test Stripe payments, use the following test card details:
+### 3. Set Up Environment Variables
 
-- Card Number: `4242 4242 4242 4242`
-- Expiration: Any future date
-- CVC: Any 3-digit number
+Create a `.env.local` file in the root of your project and include the following variables:
 
-## Going to Production
+```bash
+# NextAuth settings
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-nextauth-secret
 
-When you're ready to deploy your SaaS application to production, follow these steps:
+# Stripe settings
+STRIPE_SECRET_KEY=your-stripe-secret-key
+STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key
+STRIPE_WEBHOOK_SECRET=your-stripe-webhook-secret
 
-### Set up a production Stripe webhook
+# MongoDB settings
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/dbname?retryWrites=true&w=majority
 
-1. Go to the Stripe Dashboard and create a new webhook for your production environment.
-2. Set the endpoint URL to your production API route (e.g., `https://yourdomain.com/api/stripe/webhook`).
-3. Select the events you want to listen for (e.g., `checkout.session.completed`, `customer.subscription.updated`).
+# Supabase
+DATABASE_URL=your-database-url
+DB_CONNECTION=your-connection-string
+```
 
-### Deploy to Vercel
+### 4. Drizzle Kit Setup
 
-1. Push your code to a GitHub repository.
-2. Connect your repository to Vercel and deploy it.
-3. Follow the Vercel deployment process, which will guide you through setting up your project.
+Drizzle Kit is used for handling database migrations and schema management. To set it up, follow these steps:
 
-### Add environment variables
+1. Install **Drizzle Kit** as a development dependency:
 
-In your Vercel project settings (or during deployment), add all the necessary environment variables. Make sure to update the values for the production environment, including:
+   ```bash
+   npm install drizzle-kit --save-dev
+   ```
 
-1. `BASE_URL`: Set this to your production domain.
-2. `STRIPE_SECRET_KEY`: Use your Stripe secret key for the production environment.
-3. `STRIPE_WEBHOOK_SECRET`: Use the webhook secret from the production webhook you created in step 1.
-4. `DATABASE_URL`: Set this to your production database URL.
-5. `AUTH_SECRET`: Set this to a random string. `openssl rand -base64 32` will generate one.
+2. Create a **drizzle.config.ts** file to configure the database connection and migration paths:
 
-## Other Templates
+   ```ts
+   import { defineConfig } from 'drizzle-kit';
 
-While this template is intentionally minimal and to be used as a learning resource, there are other paid versions in the community which are more full-featured:
+   export default defineConfig({
+     schema: './src/db/schema', // Path to your schema files
+     out: './migrations',       // Directory where migrations are stored
+     driver: 'pg',              // Database driver, e.g., 'pg' for PostgreSQL
+     dbConnectionString: process.env.DRIZZLE_DB_CONNECTION, // Database connection string from .env
+   });
+   ```
 
-- https://achromatic.dev
-- https://shipfa.st
-- https://makerkit.dev
+3. Run migrations:
+
+   ```bash
+   npx drizzle-kit generate
+   npx drizzle-kit push
+   ```
+
+4. Add database schema changes and run migrations as your application grows.
+
+### 5. Run the Development Server
+
+To start the development server, run:
+
+```bash
+npm run dev
+```
+
+or
+
+```bash
+yarn dev
+```
+
+Access the app at `http://localhost:3000`.
+
+## Scripts
+
+- **Start Development**: `npm run dev` – Runs the app in development mode.
+- **Build for Production**: `npm run build` – Builds the app for production deployment.
+- **Start in Production**: `npm start` – Starts the app using the built files.
+- **Linting**: `npm run lint` – Runs ESLint to check for code quality.
+- **Run Migrations**: `npx drizzle-kit generate && npx drizzle-kit push` – Generates and applies database migrations.
+
+## Key Components
+
+- **Landing Page**: 
+  - Marketing and club introduction for prospective users.
+  
+- **Pricing**: 
+  - Flexible payment integration with **Stripe** and **Solana Pay**.
+
+- **Dashboard**: 
+  - Allows users to manage clubs and view NFT-related content.
+  
+- **RBAC (Role-Based Access Control)**: 
+  - Defines permissions for **Owners** and **Members** to manage club assets and content.
+
+- **Authentication & JWT**: 
+  - Authentication system using **NextAuth.js** to manage user sessions securely with **JWTs** stored in cookies.
+
+- **Stripe Payment**: 
+  - Handles subscription payments and plan upgrades using **Stripe Checkout** and **Customer Portal**.
+
+- **Middleware**: 
+  - Global middleware to protect logged-in routes.
+  - Local middleware to secure server actions or validate **Zod** schemas.
+
+- **Activity Logging**: 
+  - Logs user activities for improved monitoring and auditing.
+
+- **Database with Drizzle Kit**: 
+  - Simplified schema migrations and updates using Drizzle Kit for consistent database management.
+
+## Deployment
+
+For deployment, platforms like **Vercel** are ideal for deploying Next.js applications.
+
+1. Push your code to GitHub or another Git provider.
+2. Link your repository to [Vercel](https://vercel.com/).
+3. Set the **environment variables** on Vercel under "Settings > Environment Variables".
+4. Vercel will handle the build and deployment process automatically.
+
+## Webhooks
+
+To handle Stripe events like subscription creation or payment failures, set up a webhook endpoint:
+
+1. In your Stripe dashboard, navigate to **Developers > Webhooks**.
+2. Add a new endpoint with the URL `https://your-domain.com/api/webhooks/stripe`.
+3. Configure necessary Stripe events (e.g., `invoice.payment_succeeded`, `invoice.payment_failed`).
+4. Add your **webhook secret** to `.env.local` as `STRIPE_WEBHOOK_SECRET`.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for more details.
